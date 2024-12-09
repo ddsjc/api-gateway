@@ -1,0 +1,33 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: api-gateway-service
+
+  cloud:
+    application:
+      name: api-gateway-service
+      cloud:
+        discovery:
+          client:
+            simple: false
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/ # URL Eureka-сервера
+    register-with-eureka: true # Регистрация сервиса
+    fetch-registry: true # Получение реестра других сервисов
+  instance:
+    prefer-ip-address: true # Использовать IP вместо hostname
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+
+jwt:
+  secret: TWVnYUxhcmdlU2lnbmluZ1NlY3JldEtleUZvckF1dGhTZXJ2aWNlTWVnYUxhcmdlU2lnbmluZ1NlY3JldEtleUZvclRhc2tUcmFja2VyU2VydmljZQ==
+
