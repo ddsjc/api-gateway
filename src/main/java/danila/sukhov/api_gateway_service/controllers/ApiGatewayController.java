@@ -12,11 +12,21 @@ import java.util.Map;
 
 @RestController
 public class ApiGatewayController {
-  private final RestTemplate restTemplate = new RestTemplate();
-  @Autowired
-  private LoadBalancerClient loadBalancerClient;
+    private final RestTemplate restTemplate;
 
-    @PostMapping("/auth-service/auth/**")
+    @Autowired
+    private LoadBalancerClient loadBalancerClient;
+
+    @Autowired
+    public ApiGatewayController(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
+
+  private static final String AUTH_SERVICE = "/auth-service/auth/**";
+  private static final String AUTH_SERVICE_USER_GET = "/auth-service/user/get";
+  private static final String AUTH_SERVICE_USER_PATCH = "/auth-service/user/update";
+
+    @PostMapping(AUTH_SERVICE)
     public ResponseEntity<?> routeToAuthService(
             HttpServletRequest request,
             @RequestBody(required = false) String body,
@@ -25,7 +35,7 @@ public class ApiGatewayController {
         return forwardRequest("POST", targetUrl, body, headers);
     }
 
-    @GetMapping("/auth-service/user/**")
+    @GetMapping(AUTH_SERVICE_USER_GET)
     public ResponseEntity<?> routeToGetUser(
             HttpServletRequest request,
             @RequestBody(required = false) String body,
@@ -34,6 +44,17 @@ public class ApiGatewayController {
         System.out.println("Routing to: " + targetUrl);
         return forwardRequest("GET", targetUrl, body, headers);
     }
+
+    @PatchMapping(AUTH_SERVICE_USER_PATCH)
+    public ResponseEntity<?> routeToPatchUser(
+            HttpServletRequest request,
+            @RequestBody(required = false) String body,
+            @RequestHeader Map<String, String> headers) {
+        String targetUrl = getServiceUrl("auth-service") + getRequestPath(request, "/auth-service");
+        System.out.println("Routing to: " + targetUrl);
+        return forwardRequest("PATCH", targetUrl, body, headers);
+    }
+
 
     @GetMapping("/task-tracker/**")
     public ResponseEntity<?> routeToTaskTrackerService(
